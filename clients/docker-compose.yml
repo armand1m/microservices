@@ -9,8 +9,14 @@ services:
       - database
     links:
       - database
+    volumes:
+      - ./service:/src
+    ports:
+      - "3000"
     environment:
       - NODE_ENV=production
+      - DB_PORT=28015
+      - PORT=3000
 
   database:
     image: rethinkdb:latest
