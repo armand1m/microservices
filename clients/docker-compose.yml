@@ -1,0 +1,18 @@
+version: '2'
+services:
+  service:
+    build:
+      context: ./service
+      dockerfile: Dockerfile
+    command: npm start
+    depends_on:
+      - database
+    links:
+      - database
+    environment:
+      - NODE_ENV=production
+
+  database:
+    image: rethinkdb:latest
+    volumes:
+      - ./data:/data
