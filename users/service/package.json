@@ -1,14 +1,19 @@
 {
-  "name": "users-service",
+  "name": "microservices",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "micro -p 3000 index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "micro": "^4.0.0"
+    "micro": "^4.0.0",
+    "thinky": "^2.3.2"
+  },
+  "devDependencies": {
+    "ava": "^0.15.2"
   }
 }

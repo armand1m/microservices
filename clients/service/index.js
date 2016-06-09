@@ -1,13 +1,10 @@
 import micro, { send, sendError, json } from 'micro';
-import thinky from 'thinky';
-
-const type = thinky.type;
+import thinky, { type } from 'thinky';
 
 const db = thinky({
+  db: "clients",
   host: "database",
   port: process.env.DB_PORT,
-  authKey: "",
-  db: "clients"
 });
 
 const Client = db.createModel("Client", {
@@ -19,33 +16,40 @@ const Client = db.createModel("Client", {
 });
 
 const save = async (request, response) => {
-  var data = await json(request);
-
-  new Client(data)
-  .save()
-  .then(client => {
-    console.log(client);
-    return client;
-  });
-}
+  return await new Client(await json(request)).save();
+};
 
 const all = async (request, response) => {
-  Client
-  .run()
-  .then(clients => {
-    console.log(clients);
-    return clients;
-  });
-}
+  return await Client.run();
+};
+
+const update = async (request, response) => {
+  var data = await json(request);
+
+  return
+    await Client
+    .get(data.id)
+    .update(data)
+    .run();
+};
+
+const remove = async (request, response) => {
+  var data = await json(request);
+
+  return
+    await Client
+   .get(data.id)
+   .run()
+   .delete();
+};
 
 const router = async (request, response) => {
   try {
     switch (request.method) {
-      case 'POST':
-        return save(request, response);
-
-      case 'GET':
-        return all(request, response);
+      case 'DELETE': return remove(request, response);
+      case 'POST': return save(request, response);
+      case 'PUT': return update(request, response);
+      case 'GET': return all(request, response);
 
       default:
         send(response, 405, 'Invalid method');
