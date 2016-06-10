@@ -43,7 +43,7 @@ const remove = async (request, response) => {
    .delete();
 };
 
-const router = async (request, response) => {
+const handler = async (request, response) => {
   try {
     switch (request.method) {
       case 'DELETE': return remove(request, response);
@@ -62,7 +62,7 @@ const router = async (request, response) => {
 
 export default async function (request, response) {
   try {
-    send(response, 200, await router(request, response));
+    send(response, 200, await handler(request, response));
   } catch (error) {
     sendError(request, response, error);
   }

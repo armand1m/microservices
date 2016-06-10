@@ -4,13 +4,11 @@ services:
     build:
       context: ./service
       dockerfile: Dockerfile
-    command: sh -c 'cp -r /tmp/node_modules node_modules; npm start'
+    command: npm start
     depends_on:
       - database
     links:
       - database
-    volumes:
-      - ./service:/src
     ports:
       - "3000"
     environment:
