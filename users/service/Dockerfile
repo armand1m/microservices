@@ -1,11 +1,12 @@
 FROM alpine:3.3
-RUN apk add --update --no-cache nodejs make gcc g++ python
+RUN apk add --update --no-cache nodejs
+#RUN apk add --update --no-cache make gcc g++ python
 
 ADD package.json /tmp/package.json
 RUN cd /tmp && npm install --production
-RUN mkdir -p /src && cp -a /tmp/node_modules /src/
+RUN mkdir /src && cp -a /tmp/node_modules /src/
 
-VOLUME /src
+ADD . /src
 WORKDIR /src
 
 EXPOSE 3000

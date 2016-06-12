@@ -1,68 +1,95 @@
-import micro, { send, sendError, json } from 'micro';
-import thinky, { type } from 'thinky';
+'use strict';
 
-const db = thinky({
-  db: "users",
-  host: "database",
-  port: process.env.DB_PORT,
-});
+const Hapi = require('hapi');
+const User = require('./model');
 
-const User = db.createModel("User", {
-  id: type.string(),
-  email: type.string().required(),
-  password: type.string().required(),
-  active: type.boolean().default(true)
-});
+class UserService {
+  constructor() {
+    this.server = new Hapi.Server();
+  }
 
-const save = async (request, response) => {
-  return await new User(await json(request)).save();
-};
+  configure() {
+    var server = this.server;
 
-const all = async (request, response) => {
-  return await User.run();
-};
+    server.connection({ port: process.env.PORT  });
 
-const update = async (request, response) => {
-  var data = await json(request);
+    server.route({
+      method: 'GET',
+      path: '/',
+      handler: UserService.all
+    });
 
-  return
-    await User
-    .get(data.id)
-    .update(data)
-    .run();
-};
+    server.route({
+      method: 'POST',
+      path: '/',
+      handler: UserService.save
+    });
 
-const remove = async (request, response) => {
-  var data = await json(request);
+    server.route({
+      method: 'PUT',
+      path: '/',
+      handler: UserService.update
+    });
 
-  return
-    await User
-   .get(data.id)
-   .run()
-   .delete();
-};
+    server.route({
+      method: 'DELETE',
+      path: '/',
+      handler: UserService.remove,
+      config: {
+        description: 'Delete a user.',
+        notes: 'Send the id of the user as json. E.g.: "{ "id": "hash" }". ',
+        tags: ['api', 'user']
+      }
+    });
 
-const handler = async (request, response) => {
-  try {
-    switch (request.method) {
-      case 'DELETE': return remove(request, response);
-      case 'POST': return save(request, response);
-      case 'PUT': return update(request, response);
-      case 'GET': return all(request, response);
+    return this;
+  }
 
-      default:
-        send(response, 405, 'Invalid method');
-        break;
-    }
-  } catch (error) {
-    throw error;
+  start() {
+    var server = this.server;
+
+    server.start(err => {
+      if (err) throw err;
+
+      console.log(`Server running at: ${server.info.uri}`);
+    });
+  }
+
+  static all(request, reply) {
+    User
+    .run()
+    .then(users => reply(users))
+    .error(error => reply(error));
+  }
+
+  static save(request, reply) {
+    new User(request.payload)
+        .save()
+        .then(user => reply(user))
+        .error(error => reply(error));
+  }
+
+  static update(request, reply) {
+    User
+    .get(request.payload.id)
+    .update(request.payload)
+    .then(user => reply(user))
+    .error(error => reply(error));
+  }
+
+  static remove(request, reply) {
+    User
+    .get(request.payload.id)
+    .then(user => {
+      user
+      .delete()
+      .then(result => reply(result))
+      .error(error => reply(error));
+    })
+    .error(error => reply(error));
   }
 }
 
-export default async (request, response) => {
-  try {
-    send(response, 200, await handler(request, response));
-  } catch (error) {
-    sendError(request, response, error);
-  }
-}
+new UserService()
+    .configure()
+    .start();

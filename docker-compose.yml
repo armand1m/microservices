@@ -4,17 +4,17 @@ services:
     build:
       context: ./users/service
       dockerfile: Dockerfile
-    command: sh -c 'cp -r /tmp/node_modules node_modules; npm start'
+    command: npm start
     depends_on:
-      - database
+      - users_database
     links:
-      - database
-    volumes:
-      - ./users/service:/src
+      - users_database
     ports:
-      - "3000"
+      - 3000
     environment:
+      - DOCKER_ENV=true
       - NODE_ENV=production
+      - DB_HOST=users_database
       - DB_PORT=28015
       - PORT=3000
 
@@ -22,21 +22,30 @@ services:
     build:
       context: ./clients/service
       dockerfile: Dockerfile
-    command: sh -c 'cp -r /tmp/node_modules node_modules; npm start'
+    command: npm start
     depends_on:
-      - database
+      - clients_database
     links:
-      - database
-    volumes:
-      - ./clients/service:/src
+      - clients_database
     ports:
-      - "3000"
+      - 3000
     environment:
+      - DOCKER_ENV=true
       - NODE_ENV=production
+      - DB_HOST=clients_database
       - DB_PORT=28015
       - PORT=3000
 
-  database:
+  users_database:
     image: rethinkdb:latest
+    ports:
+      - 28015
     volumes:
-      - ./data:/data
+      - ./users/data:/data
+
+  clients_database:
+    image: rethinkdb:latest
+    ports:
+      - 28015
+    volumes:
+      - ./clients/data:/data
