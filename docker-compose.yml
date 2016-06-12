@@ -5,10 +5,13 @@ services:
       context: ./users/service
       dockerfile: Dockerfile
     command: npm start
+    hostname: users
     depends_on:
       - users_database
+      - consul
     links:
       - users_database
+      - consul
     ports:
       - 3000
     environment:
@@ -16,6 +19,8 @@ services:
       - NODE_ENV=production
       - DB_HOST=users_database
       - DB_PORT=28015
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
       - PORT=3000
 
   clients:
@@ -23,10 +28,13 @@ services:
       context: ./clients/service
       dockerfile: Dockerfile
     command: npm start
+    hostname: clients
     depends_on:
       - clients_database
+      - consul
     links:
       - clients_database
+      - consul
     ports:
       - 3000
     environment:
@@ -34,6 +42,8 @@ services:
       - NODE_ENV=production
       - DB_HOST=clients_database
       - DB_PORT=28015
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
       - PORT=3000
 
   users_database:
@@ -49,3 +59,14 @@ services:
       - 28015
     volumes:
       - ./clients/data:/data
+
+  consul:
+    image: gliderlabs/consul-server:latest
+    container_name: "consul"
+    hostname: "consul"
+    ports:
+      - "8300:8300"
+      - "8400:8400"
+      - "8500:8500"
+      - "8600:53"
+    command: "-server -bootstrap"

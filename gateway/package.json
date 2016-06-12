@@ -1,5 +1,5 @@
 {
-  "name": "microservices",
+  "name": "gateway",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,8 +11,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "consul": "^0.25.0",
-    "death": "^1.0.0",
     "hapi": "^13.4.1",
     "thinky": "^2.3.2"
   },

@@ -2,6 +2,7 @@
 
 const Hapi = require('hapi');
 const Client = require('./model');
+const consul = require('./consul');
 
 class ClientService {
   constructor() {
@@ -34,12 +35,13 @@ class ClientService {
     server.route({
       method: 'DELETE',
       path: '/',
-      handler: ClientService.remove,
-      config: {
-        description: 'Delete a client.',
-        notes: 'Send the id of the client as json. E.g.: "{ "id": "hash" }". ',
-        tags: ['api', 'client']
-      }
+      handler: ClientService.remove
+    });
+
+    server.route({
+      method: 'GET',
+      path: '/health',
+      handler: ClientService.health
     });
 
     return this;
@@ -51,8 +53,39 @@ class ClientService {
     server.start(err => {
       if (err) throw err;
 
+      console.log(server.info);
       console.log(`Server running at: ${server.info.uri}`);
+
+      this.register();
     });
+  }
+
+  register() {
+    var server = this.server;
+
+    var options = {
+      name: server.info.host,
+      address: server.info.host,
+      check: {
+        http: `${server.info.uri}/health`,
+        interval: '10s'
+      }
+    };
+
+    consul.agent.service.register(options, err => {
+      if (err) throw err;
+
+      process.on('SIGINT', function() {
+        consul.agent.service.deregister(server.info.host, function(err, result) {
+          if (err) throw err;
+          console.log("Service unregistered from service discovery.");
+        });
+      });
+    });
+  }
+
+  static health(request, reply) {
+    reply({ status: 'healthy' });
   }
 
   static all(request, reply) {
