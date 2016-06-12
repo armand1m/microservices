@@ -1,0 +1,14 @@
+{
+  "test": {
+    "host": "database",
+    "port": "28015"
+  },
+  "development": {
+    "host": "database",
+    "port": "28015"
+  },
+  "production": {
+    "host": "database",
+    "port": "28015"
+  }
+}

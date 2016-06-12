@@ -1,10 +1,17 @@
-import micro, { send, sendError, json } from 'micro';
-import thinky, { type } from 'thinky';
+'use strict';
+
+const environment = process.env.NODE_ENV || 'development';
+const configFile = process.env.DOCKER_ENV ? '/config.docker.json' : '/config.json';
+const config = require(`${__dirname}/${configFile}`)[environment];
+
+const Hapi = require('hapi');
+const thinky = require('thinky');
+const type = thinky.type;
 
 const db = thinky({
   db: "clients",
-  host: "database",
-  port: process.env.DB_PORT,
+  host: process.env.DB_HOST ? process.env.DB_HOST : config.host,
+  port: process.env.DB_PORT ? process.env.DB_PORT : config.port
 });
 
 const Client = db.createModel("Client", {
@@ -15,55 +22,93 @@ const Client = db.createModel("Client", {
   active: type.boolean().default(true)
 });
 
-const save = async (request, response) => {
-  return await new Client(await json(request)).save();
-};
+class ClientService {
+  constructor() {
+    this.server = new Hapi.Server();
+  }
 
-const all = async (request, response) => {
-  return await Client.run();
-};
+  configure() {
+    var server = this.server;
 
-const update = async (request, response) => {
-  var data = await json(request);
+    server.connection({ port: process.env.PORT  });
 
-  return
-    await Client
-    .get(data.id)
-    .update(data)
-    .run();
-};
+    server.route({
+      method: 'GET',
+      path: '/',
+      handler: ClientService.all
+    });
 
-const remove = async (request, response) => {
-  var data = await json(request);
+    server.route({
+      method: 'POST',
+      path: '/',
+      handler: ClientService.save
+    });
 
-  return
-    await Client
-   .get(data.id)
-   .run()
-   .delete();
-};
+    server.route({
+      method: 'PUT',
+      path: '/',
+      handler: ClientService.update
+    });
 
-const handler = async (request, response) => {
-  try {
-    switch (request.method) {
-      case 'DELETE': return remove(request, response);
-      case 'POST': return save(request, response);
-      case 'PUT': return update(request, response);
-      case 'GET': return all(request, response);
+    server.route({
+      method: 'DELETE',
+      path: '/',
+      handler: ClientService.remove,
+      config: {
+        description: 'Delete a client.',
+        notes: 'Send the id of the client as json. E.g.: "{ "id": "hash" }". ',
+        tags: ['api', 'client']
+      }
+    });
 
-      default:
-        send(response, 405, 'Invalid method');
-        break;
-    }
-  } catch (error) {
-    throw error;
+    return this;
+  }
+
+  start() {
+    var server = this.server;
+
+    server.start(err => {
+      if (err) throw err;
+
+      console.log(`Server running at: ${server.info.uri}`);
+    });
+  }
+
+  static all(request, reply) {
+    Client
+    .run()
+    .then(clients => reply(clients))
+    .error(error => reply(error));
+  }
+
+  static save(request, reply) {
+    new Client(request.payload)
+        .save()
+        .then(client => reply(client))
+        .error(error => reply(error));
+  }
+
+  static update(request, reply) {
+    Client
+    .get(request.payload.id)
+    .update(request.payload)
+    .then(client => reply(client))
+    .error(error => reply(error));
+  }
+
+  static remove(request, reply) {
+    Client
+    .get(request.payload.id)
+    .then(client => {
+      client
+      .delete()
+      .then(result => reply(result))
+      .error(error => reply(error));
+    })
+    .error(error => reply(error));
   }
 }
 
-export default async function (request, response) {
-  try {
-    send(response, 200, await handler(request, response));
-  } catch (error) {
-    sendError(request, response, error);
-  }
-}
+new ClientService()
+    .configure()
+    .start();
