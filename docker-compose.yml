@@ -62,6 +62,14 @@ services:
     volumes:
       - ./clients/data:/data
 
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    command: npm start
+    ports:
+      - 3000:80
+
   consul:
     image: gliderlabs/consul-server:latest
     hostname: "consul"
@@ -84,9 +92,3 @@ services:
       - users
     volumes:
       - ./fabio/fabio.properties:/etc/fabio/fabio.properties
-    environment:
-      - SERVICE_9998_TAGS=urlprefix-/fabio
-
-networks:
-  default:
-    driver: bridge
