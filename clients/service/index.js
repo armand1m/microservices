@@ -16,25 +16,25 @@ class ClientService {
 
     server.route({
       method: 'GET',
-      path: '/',
+      path: '/clients',
       handler: ClientService.all
     });
 
     server.route({
       method: 'POST',
-      path: '/',
+      path: '/clients',
       handler: ClientService.save
     });
 
     server.route({
       method: 'PUT',
-      path: '/',
+      path: '/clients',
       handler: ClientService.update
     });
 
     server.route({
       method: 'DELETE',
-      path: '/',
+      path: '/clients',
       handler: ClientService.remove
     });
 

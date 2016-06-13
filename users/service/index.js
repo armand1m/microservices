@@ -16,25 +16,25 @@ class UserService {
 
     server.route({
       method: 'GET',
-      path: '/',
+      path: '/users',
       handler: UserService.all
     });
 
     server.route({
       method: 'POST',
-      path: '/',
+      path: '/users',
       handler: UserService.save
     });
 
     server.route({
       method: 'PUT',
-      path: '/',
+      path: '/users',
       handler: UserService.update
     });
 
     server.route({
       method: 'DELETE',
-      path: '/',
+      path: '/users',
       handler: UserService.remove
     });
 
