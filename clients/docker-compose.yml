@@ -10,7 +10,7 @@ services:
     links:
       - database
     ports:
-      - 3000
+      - 80
     environment:
       - DOCKER_ENV=true
       - NODE_ENV=production

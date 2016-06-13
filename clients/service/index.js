@@ -53,8 +53,8 @@ class ClientService {
     server.start(err => {
       if (err) throw err;
 
-      console.log(server.info);
       console.log(`Server running at: ${server.info.uri}`);
+      console.log("Server info: ", server.info);
 
       this.register();
     });
@@ -66,6 +66,8 @@ class ClientService {
     var options = {
       name: server.info.host,
       address: server.info.host,
+      port: +process.env.PORT,
+      tags: process.env.PREFIXES.split(",").map(prefix => `urlprefix-${prefix}`),
       check: {
         http: `${server.info.uri}/health`,
         interval: '10s'

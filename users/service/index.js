@@ -65,6 +65,8 @@ class UserService {
     var options = {
       name: server.info.host,
       address: server.info.host,
+      port: +process.env.PORT,
+      tags: process.env.PREFIXES.split(",").map(prefix => `urlprefix-${prefix}`),
       check: {
         http: `${server.info.uri}/health`,
         interval: '10s'

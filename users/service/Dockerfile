@@ -9,4 +9,4 @@ RUN mkdir /src && cp -a /tmp/node_modules /src/
 ADD . /src
 WORKDIR /src
 
-EXPOSE 3000
+EXPOSE 80

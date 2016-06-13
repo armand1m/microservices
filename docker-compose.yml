@@ -13,15 +13,16 @@ services:
       - users_database
       - consul
     ports:
-      - 3000
+      - 80
     environment:
       - DOCKER_ENV=true
       - NODE_ENV=production
+      - PORT=80
       - DB_HOST=users_database
       - DB_PORT=28015
       - CONSUL_HOST=consul
       - CONSUL_PORT=8500
-      - PORT=3000
+      - PREFIXES=/users
 
   clients:
     build:
@@ -36,15 +37,16 @@ services:
       - clients_database
       - consul
     ports:
-      - 3000
+      - 80
     environment:
       - DOCKER_ENV=true
       - NODE_ENV=production
+      - PORT=80
       - DB_HOST=clients_database
       - DB_PORT=28015
       - CONSUL_HOST=consul
       - CONSUL_PORT=8500
-      - PORT=3000
+      - PREFIXES=/clients
 
   users_database:
     image: rethinkdb:latest
@@ -62,7 +64,6 @@ services:
 
   consul:
     image: gliderlabs/consul-server:latest
-    container_name: "consul"
     hostname: "consul"
     ports:
       - "8300:8300"
@@ -70,3 +71,22 @@ services:
       - "8500:8500"
       - "8600:53"
     command: "-server -bootstrap"
+
+  fabio:
+    image: magiconair/fabio:latest
+    hostname: fabio
+    ports:
+      - "9999:9999"
+      - "9998:9998"
+    links:
+      - consul
+      - clients
+      - users
+    volumes:
+      - ./fabio/fabio.properties:/etc/fabio/fabio.properties
+    environment:
+      - SERVICE_9998_TAGS=urlprefix-/fabio
+
+networks:
+  default:
+    driver: bridge
