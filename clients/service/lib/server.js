@@ -47,7 +47,8 @@ class Server {
       handler(request, reply) {
         reply({ host: server.info.host })
       }
-    })
+    });
+
     server.route({
       method: 'GET',
       path: '/health',

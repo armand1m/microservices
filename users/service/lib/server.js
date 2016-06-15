@@ -43,6 +43,14 @@ class Server {
 
     server.route({
       method: 'GET',
+      path: `${this.url}/host`,
+      handler(request, reply) {
+        reply({ host: server.info.host })
+      }
+    });
+
+    server.route({
+      method: 'GET',
       path: '/health',
       handler(request, reply) {
         reply({ status: 'healthy' });
