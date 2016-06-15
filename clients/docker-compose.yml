@@ -7,17 +7,22 @@ services:
     command: npm start
     depends_on:
       - database
+      - consul
     links:
       - database
+      - consul
     ports:
       - 80
     environment:
       - DOCKER_ENV=true
       - NODE_ENV=production
+      - PORT=80
       - DB_HOST=database
       - DB_PORT=28015
+      - CONSUL_HOST=consul
       - CONSUL_PORT=8500
-      - PORT=3000
+      - SERVICE_NAME=clients
+      - PREFIXES=/clients
 
   database:
     image: rethinkdb:latest
@@ -25,3 +30,13 @@ services:
       - 28015:28015
     volumes:
       - ./data:/data
+
+  consul:
+    image: gliderlabs/consul-server:latest
+    hostname: "consul"
+    ports:
+      - "8300:8300"
+      - "8400:8400"
+      - "8500:8500"
+      - "8600:53"
+    command: "-server -bootstrap"

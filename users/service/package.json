@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node lib/server.js",
     "test": "ava ",
     "testd": "ava --watch"
   },

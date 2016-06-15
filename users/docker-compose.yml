@@ -10,17 +10,21 @@ services:
     links:
       - database
     ports:
-      - 3000
+      - 80
     environment:
       - DOCKER_ENV=true
       - NODE_ENV=production
+      - PORT=80
       - DB_HOST=database
       - DB_PORT=28015
-      - PORT=3000
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
+      - SERVICE_NAME=users
+      - PREFIXES=/users
 
   database:
     image: rethinkdb:latest
     ports:
-      - 28016:28015
+      - 28015
     volumes:
       - ./data:/data

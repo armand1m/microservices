@@ -5,7 +5,6 @@ services:
       context: ./users/service
       dockerfile: Dockerfile
     command: npm start
-    hostname: users
     depends_on:
       - users_database
       - consul
@@ -22,6 +21,7 @@ services:
       - DB_PORT=28015
       - CONSUL_HOST=consul
       - CONSUL_PORT=8500
+      - SERVICE_NAME=users
       - PREFIXES=/users
 
   clients:
@@ -29,7 +29,6 @@ services:
       context: ./clients/service
       dockerfile: Dockerfile
     command: npm start
-    hostname: clients
     depends_on:
       - clients_database
       - consul
@@ -46,6 +45,7 @@ services:
       - DB_PORT=28015
       - CONSUL_HOST=consul
       - CONSUL_PORT=8500
+      - SERVICE_NAME=clients
       - PREFIXES=/clients
 
   users_database:
@@ -88,7 +88,5 @@ services:
       - "9998:9998"
     links:
       - consul
-      - clients
-      - users
     volumes:
       - ./fabio/fabio.properties:/etc/fabio/fabio.properties
