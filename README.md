@@ -67,3 +67,11 @@ You can also log using `docker-compose logs -f`.
 You can see the registered routes and services in `http://localhost:9998/routes`.
 
 You can also access Consul UI in `http://localhost:8500`.
+
+## Destroying
+
+You can destroy the instantiated containers in production environment using:
+
+```bash
+$ ./destroy
+```
