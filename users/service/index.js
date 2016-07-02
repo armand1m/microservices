@@ -20,7 +20,7 @@ function onServerReady(server) {
         .unregister()
         .then(Events.onServiceUnregistered)
         .then(Events.doSafeExit)
-        .catch(Events.onServiceUnregistered)
+        .catch(Events.onServiceUnregisterError)
       )
     )
   }
