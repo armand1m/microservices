@@ -2,7 +2,21 @@
 
 const Client = require('./model');
 
-class Service {
+module.exports = class Service {
+  static getRoutes(path) {
+    return [
+      { method: 'GET', path: path, handler: Service.all },
+      { method: 'POST', path: path, handler: Service.save },
+      { method: 'PUT', path: path, handler: Service.update },
+      { method: 'DELETE', path: path, handler: Service.remove },
+      { method: 'GET', path: '/health', handler: Service.health }
+    ];
+  }
+
+  static health(request, reply) {
+    reply({ status: 'healthy' });
+  }
+
   static all(request, reply) {
     Client
     .run()
@@ -12,9 +26,9 @@ class Service {
 
   static save(request, reply) {
     new Client(request.payload)
-        .save()
-        .then(client => reply(client))
-        .error(error => reply(error));
+    .save()
+    .then(client => reply(client))
+    .error(error => reply(error));
   }
 
   static update(request, reply) {
@@ -37,5 +51,3 @@ class Service {
     .error(error => reply(error));
   }
 }
-
-module.exports = Service;

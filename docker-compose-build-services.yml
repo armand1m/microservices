@@ -1,0 +1,11 @@
+version: '2'
+services:
+  clients:
+    build:
+      context: ./clients/service
+      dockerfile: Dockerfile-production
+
+  users:
+    build:
+      context: ./users/service
+      dockerfile: Dockerfile-production

@@ -1,14 +1,9 @@
-const config = require('../config/config');
-const thinky = require('thinky');
-const type = thinky.type;
+'use strict';
 
-const db = thinky({
-  db: process.env.SERVICE_NAME,
-  host: process.env.DB_HOST ? process.env.DB_HOST : config.DB_HOST,
-  port: process.env.DB_PORT ? process.env.DB_PORT : config.DB_PORT
-});
+const Database = require('./database');
+const type = require('thinky').type;
 
-const Client = db.createModel("Client", {
+const Model = Database.createModel("Client", {
   id: type.string(),
   name: type.string().required(),
   email: type.string().email().required(),
@@ -16,4 +11,4 @@ const Client = db.createModel("Client", {
   active: type.boolean().default(true)
 });
 
-module.exports = Client;
+module.exports = Model;

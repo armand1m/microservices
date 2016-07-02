@@ -1,103 +1,65 @@
 'use strict';
 
 const Hapi = require('hapi');
-const Consul = require('./consul');
+const ConsulAgentService = require('./consul').agent.service;
 const Service = require('./service');
 
-class Server {
+module.exports = class Server {
   constructor() {
     this.server = new Hapi.Server();
     this.prefixes = process.env.PREFIXES.split(",");
     this.name = process.env.SERVICE_NAME;
+    this.port = +process.env.SERVICE_PORT;
     this.url = this.prefixes[0];
   }
 
-  configure() {
+  get description() {
     var server = this.server;
 
-    server.connection({ port: process.env.PORT  });
-
-    server.route({
-      method: 'GET',
-      path: this.url,
-      handler: Service.all
-    });
-
-    server.route({
-      method: 'POST',
-      path: this.url,
-      handler: Service.save
-    });
-
-    server.route({
-      method: 'PUT',
-      path: this.url,
-      handler: Service.update
-    });
-
-    server.route({
-      method: 'DELETE',
-      path: this.url,
-      handler: Service.remove
-    });
-
-    server.route({
-      method: 'GET',
-      path: `${this.url}/host`,
-      handler(request, reply) {
-        reply({ host: server.info.host })
-      }
-    });
-
-    server.route({
-      method: 'GET',
-      path: '/health',
-      handler(request, reply) {
-        reply({ status: 'healthy' });
-      }
-    });
-
-    return this;
-  }
-
-  start() {
-    var server = this.server;
-
-    server.start(err => {
-      if (err) throw err;
-
-      console.log(`Server running at: ${server.info.uri}`);
-      console.log("Server info: ", server.info);
-
-      this.register();
-    });
-  }
-
-  register() {
-    var server = this.server;
-
-    var options = {
+    return {
       name: `${this.name}:${server.info.id}`,
       address: server.info.host,
-      port: +process.env.PORT,
-      tags: process.env.PREFIXES.split(",").map(prefix => `urlprefix-${prefix}`),
+      port: this.port,
+      tags: this.prefixes.map(prefix => `urlprefix-${prefix}`),
       check: {
         http: `${server.info.uri}/health`,
         interval: '10s'
       }
     };
+  }
 
-    Consul.agent.service.register(options, err => {
-      if (err) throw err;
+  configure() {
+    var server = this.server;
 
-      process.on('SIGINT', () => {
-        Consul.agent.service.deregister(server.info.id, function(err, result) {
-          if (err) throw err;
-          console.log("Service unregistered from service discovery.");
-        });
-      });
+    server.connection({ port: this.port });
+    server.on('route', this.onRouteAdd);
+
+    server.route({
+      method: 'GET',
+      path: `${this.url}/host`,
+      handler(request, reply) { reply({ host: server.info.host }) }
     });
+
+    Service
+    .getRoutes(this.url)
+    .forEach(route => server.route(route));
+
+    return this;
+  }
+
+  onRouteAdd(route) {
+    console.log(`+ ${route.method} ${route.path}`);
+  }
+
+  start() {
+    return new Promise((resolve, reject) => this.server.start(err => err ? reject(err) : resolve(this)));
+  }
+
+  register() {
+    return ConsulAgentService.register(this.description);
+  }
+
+  unregister() {
+    return ConsulAgentService.deregister(this.description.name);
   }
 }
-
-new Server().configure().start();

@@ -5,9 +5,18 @@ ADD package.json /tmp/package.json
 RUN cd /tmp && npm install --production
 RUN mkdir -p /src/service && cp -a /tmp/package.json /tmp/node_modules /src/
 
-VOLUME /src/service
+COPY . /src/service
 WORKDIR /src
 
 EXPOSE 80
+
+ENV NODE_ENV=production \
+    SERVICE_NAME=users \
+    SERVICE_PORT=80 \
+    DB_HOST=users_database \
+    DB_PORT=28015 \
+    CONSUL_HOST=consul \
+    CONSUL_PORT=8500 \
+    PREFIXES=/users
 
 ENTRYPOINT ["node", "./service/index.js"]

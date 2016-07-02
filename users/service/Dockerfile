@@ -1,12 +1,13 @@
-FROM alpine:3.3
+FROM alpine
 RUN apk add --update --no-cache nodejs
-#RUN apk add --update --no-cache make gcc g++ python
 
 ADD package.json /tmp/package.json
 RUN cd /tmp && npm install --production
-RUN mkdir /src && cp -a /tmp/node_modules /src/
+RUN mkdir -p /src/service && cp -a /tmp/package.json /tmp/node_modules /src/
 
-ADD . /src
+VOLUME /src/service
 WORKDIR /src
 
 EXPOSE 80
+
+ENTRYPOINT ["node", "./service/index.js"]

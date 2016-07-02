@@ -1,10 +1,11 @@
 {
-  "name": "microservices",
+  "name": "node_service",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node lib/server.js",
+    "start": "node ./service/index.js",
+    "startd": "nodemon ./service/index.js",
     "test": "ava ",
     "testd": "ava --watch"
   },

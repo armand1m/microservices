@@ -1,0 +1,25 @@
+version: '2'
+services:
+  rethinkdb_service:
+    image: rethinkdb:latest
+    ports:
+      - 28015
+
+  consul_service:
+    image: gliderlabs/consul-server:latest
+    hostname: "consul"
+    ports:
+      - "8300:8300"
+      - "8400:8400"
+      - "8500:8500"
+      - "8600:53"
+    command: "-server -bootstrap"
+
+  fabio_service:
+    image: magiconair/fabio:latest
+    hostname: fabio
+    ports:
+      - "9999:9999"
+      - "9998:9998"
+    volumes:
+      - ./fabio_service/fabio.properties:/etc/fabio/fabio.properties

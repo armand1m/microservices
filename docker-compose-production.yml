@@ -1,13 +1,10 @@
 version: '2'
 services:
   clients:
-    build: ./clients/service
-    env_file: ./clients/properties.env
+    image: microservices_clients
     restart: always
     ports:
       - 80
-    volumes:
-      - ./clients/service:/src/service
     depends_on:
       - clients_database
       - consul
@@ -16,13 +13,10 @@ services:
       - consul
 
   users:
-    build: ./users/service
-    env_file: ./users/properties.env
+    image: microservices_users
     restart: always
     ports:
       - 80
-    volumes:
-      - ./service:/src/service
     depends_on:
       - users_database
       - consul
