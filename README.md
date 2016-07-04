@@ -43,35 +43,56 @@ Actually (01/07/2016) it has only 4 services:
 
 ## Starting the project
 
-You can start the whole system in production environment using:
+First, build the services images:
 
 ```bash
-$ ./build #build production images
-$ ./run #run all services
+$ sudo ./commands/build
 ```
 
-You can start the whole system in development environment using `docker-compose up` from this project root.
+Then you can start the whole system using:
 
-You can also start single services in development environment accessing their directories and running `docker-compose up` in their root folder.
+```bash
+$ sudo ./commands/run
+```
 
-The gateway spins up a server in `http://localhost:9999` that load balance requests to the other services.
+You can see the registered routes and services in `http://localhost:9998/`.
+
+The gateway spins up a server in `http://localhost:9999/` that load balance requests to the service instances registered on Consul.
+
+You can access the Consul UI in `http://localhost:8500/` and check the registered services status.
 
 ## Monitoring & Logging
 
+- See all containers output:
+
 ```bash
-$ ./logs # logs real time events to stdout
+$ sudo ./commands/logs
 ```
 
-You can also log using `docker-compose logs -f`.
+- See containers status:
 
-You can see the registered routes and services in `http://localhost:9998/routes`.
+```bash
+$ sudo ./commands/status
+```
 
-You can also access Consul UI in `http://localhost:8500`.
+- See the output of all the instances of a service:
+
+```bash
+$ sudo docker-compose logs <service-name>
+```
 
 ## Destroying
 
-You can destroy the instantiated containers in production environment using:
+You can destroy the containers using:
 
 ```bash
-$ ./destroy
+$ sudo ./commands/destroy
+```
+
+## Scaling
+
+You can scale a service using:
+
+```bash
+$ sudo docker-compose scale <service-name>=<number-of-instances>
 ```

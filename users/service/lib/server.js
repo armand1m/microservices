@@ -31,7 +31,13 @@ module.exports = class Server {
   configure() {
     var server = this.server;
 
-    server.connection({ port: this.port });
+    server.connection({
+      port: this.port,
+      routes: {
+        cors: true
+      }
+    });
+
     server.on('route', this.onRouteAdd);
 
     server.route({

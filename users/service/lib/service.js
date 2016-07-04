@@ -13,41 +13,18 @@ class Service {
     ];
   }
 
-  static health(request, reply) {
-    reply({ status: 'healthy' });
-  }
+  static health(request, reply) { reply({ status: 'healthy' }); }
 
-  static all(request, reply) {
-    User
-    .run()
-    .then(users => reply(users))
-    .error(error => reply(error));
-  }
+  static all(request, reply) { reply(User.run()); }
 
-  static save(request, reply) {
-    new User(request.payload)
-        .save()
-        .then(user => reply(user))
-        .error(error => reply(error));
-  }
+  static save(request, reply) { reply(new User(request.payload).save()); }
 
-  static update(request, reply) {
-    User
-    .get(request.payload.id)
-    .update(request.payload)
-    .then(user => reply(user))
-    .error(error => reply(error));
-  }
+  static update(request, reply) { reply(User.get(request.payload.id).update(request.payload)); }
 
   static remove(request, reply) {
     User
     .get(request.payload.id)
-    .then(user => {
-      user
-      .delete()
-      .then(result => reply(result))
-      .error(error => reply(error));
-    })
+    .then(user => reply(user.delete()))
     .error(error => reply(error));
   }
 }

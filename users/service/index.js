@@ -4,26 +4,26 @@ const Database = require('./lib/database');
 const Server = require('./lib/server');
 const Events = require('./lib/events');
 
-function onServerReady(server) {
-  Events.onServerRunning(server);
+function setTerminationHandler(server) {
+  ['SIGINT', 'SIGTERM', 'SIGUSR2'].forEach(signal =>
+    process.on(signal, () =>
+      server
+      .unregister()
+      .then(Events.onServiceUnregistered)
+      .then(Events.doSafeExit)
+      .catch(Events.onServiceUnregisterError)
+    )
+  )
+}
 
+function onServerReady(server) {
   server
   .register()
   .then(Events.onServiceRegistered)
-  .then(setTerminationHandler)
+  .then(setTerminationHandler.bind(this, server))
   .catch(Events.onServiceRegisterError);
 
-  function setTerminationHandler() {
-    ['SIGINT', 'SIGTERM', 'SIGUSR2'].forEach(signal =>
-      process.on(signal, () =>
-        server
-        .unregister()
-        .then(Events.onServiceUnregistered)
-        .then(Events.doSafeExit)
-        .catch(Events.onServiceUnregisterError)
-      )
-    )
-  }
+  return server;
 }
 
 function onDatabaseReady() {
@@ -31,6 +31,7 @@ function onDatabaseReady() {
   .configure()
   .start()
   .then(onServerReady)
+  .then(Events.onServerRunning)
   .catch(Events.doErrorExit);
 }
 
