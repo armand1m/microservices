@@ -1,9 +1,9 @@
 version: '2'
 services:
   users:
-    build:
-      context: ./users-service/service
-      dockerfile: Dockerfile-production
+    extends:
+      file: ./users-service/docker-compose-production.yml
+      service: service
     restart: always
     ports:
       - 80

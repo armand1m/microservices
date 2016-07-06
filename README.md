@@ -47,6 +47,7 @@ First initialize git submodules. Each microservice is a git repository in my acc
 
 ```bash
 $ git submodule init
+$ git submodule update
 ```
 
 Then build the services images:
