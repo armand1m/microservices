@@ -43,7 +43,13 @@ Actually (01/07/2016) it has only 4 services:
 
 ## Starting the project
 
-First, build the services images:
+First initialize git submodules. Each microservice is a git repository in my account and is used here by a git module.
+
+```bash
+$ git submodule init
+```
+
+Then build the services images:
 
 ```bash
 $ sudo ./commands/build

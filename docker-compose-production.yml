@@ -1,13 +1,12 @@
 version: '2'
 services:
-  service:
-    build: ./service
-    env_file: ./properties.env
+  users:
+    build:
+      context: ./users-service/service
+      dockerfile: Dockerfile-production
     restart: always
     ports:
       - 80
-    volumes:
-      - ./service:/src/service
     depends_on:
       - users_database
       - consul
@@ -17,19 +16,19 @@ services:
 
   users_database:
     extends:
-      file: ../common/common-services.yml
+      file: ./core-services/services.yml
       service: rethinkdb_service
     volumes:
-      - ./data:/data
+      - ./users/data:/data
 
   consul:
     extends:
-      file: ../common/common-services.yml
+      file: ./core-services/services.yml
       service: consul_service
 
   gateway:
     extends:
-      file: ../common/common-services.yml
+      file: ./core-services/services.yml
       service: fabio_service
     links:
       - consul

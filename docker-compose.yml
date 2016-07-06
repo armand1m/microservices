@@ -1,51 +1,35 @@
 version: '2'
 services:
-  clients:
-    image: microservices_clients
-    restart: always
-    ports:
-      - 80
-    depends_on:
-      - clients_database
-      - consul
-    links:
-      - clients_database
-      - consul
-
   users:
-    image: microservices_users
+    build: ./users-service/service
+    env_file: ./users-service/properties.env
     restart: always
     ports:
       - 80
+    volumes:
+      - ./users-service/service:/src/service
     depends_on:
       - users_database
       - consul
     links:
       - users_database
       - consul
-
-  clients_database:
-    extends:
-      file: ./common/common-services.yml
-      service: rethinkdb_service
-    volumes:
-      - ./clients/data:/data
 
   users_database:
     extends:
-      file: ./common/common-services.yml
+      file: ./core-services/services.yml
       service: rethinkdb_service
     volumes:
       - ./users/data:/data
 
   consul:
     extends:
-      file: ./common/common-services.yml
+      file: ./core-services/services.yml
       service: consul_service
 
   gateway:
     extends:
-      file: ./common/common-services.yml
+      file: ./core-services/services.yml
       service: fabio_service
     links:
       - consul
