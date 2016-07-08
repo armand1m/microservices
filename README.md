@@ -1,45 +1,50 @@
 # A Microservices Architecture Study
 
-I've been reading and studying about microservices in the last months, and finally got a chance to do an actual implementation.
+I've been reading and studying about microservices in the last months, and finally got a chance to start an actual implementation.
 
 ## What I'm looking for
 
 A polyglot, scalable, portable, and easy to maintain distributed architecture.
 
-<!-- By "polyglot", I mean:
+By "polyglot", I mean:
 
- - Any service can be built using any programming language it finds more suitable for the job.
+ - Any service can be built using any kind of programming language and libraries it finds more suitable for getting his job done.
 
  - Any service can use any kind of database it finds more suitable for the job.
 
 By "easy to maintain", I mean:
 
- - A service must be simple, and small. We're talking about microservices, there are some teams that keep microservices so small that they keep between 1 ~ 100 LOC to get the job done.
+ - A service must be DRY, simple, small and follow the SRP from SOLID principles.
 
- - Must be easy to write tests for each service.
+ - Must be easy to write unit and e2e tests for each service.
 
- - It needs to be easy to switch from a stack to another, so must be upgrading to major versions of frameworks and runtimes. -->
+ - Must be easy to switch from a stack to another, so must be upgrading to major versions of frameworks and runtimes.
 
-## So what am I trying to do:
+ - It can't take longer than 3 days to refactor the whole service.
 
-I'm creating services and exposing them through a RESTful HTTP API.
+By "portable", I mean:
 
-Every service has its own Docker image, the Dockerfile's must be designed to cache as much as possible the dependencies of the services, so it can rebuild images faster and keep a good cycle of continuous deployment.
+ - Must be easy to run all the infrastructure needed to run one or more services in any kind of environment.
 
-Each service instance registers itself to a Service Discovery, so the gateway and the services themselves can find others services instances across the network.
+ - Must be easy to develop, build, debug and run a service independently 
+ or with one or more dependent services.
 
-When the service terminates, it must deregister itself from the Service Discovery, or throw any errors if needed.
+## So what I am doing:
 
-If a service throws an error to the STDOUT, the containers must restart by itself. After some tries, if the service can't instantiate and operate normally, the environment must understand that the service is buggy and it's better wait for manual repair, and stop trying to restart the container.
+Basically: I'm creating services and exposing them through a RESTful HTTP API.
+
+But in a distributed architecture it has some challenges in order to achieve consistency and resiliency.
+
+Every service has its own Docker image, the Dockerfile's must be designed to cache as much as possible its own layers, so it can rebuild images faster and keep a fast cycle of continuous deployment.
+
+Each service runs only one process inside a container.
+
+If a service process throws an error to the STDOUT, the container must restart. After some tries, if the service can't stop throwing errors and operate normally, the environment must understand that the service is down and it's better wait for manual repair, and stop trying to restart the container.
+ After some 
 
 ## How it is structured
 
-Actually (01/07/2016) it has only 4 services:
-
-- Clients service (Node.js + RethinkDB)
-- Users service (Node.js + RethinkDB)
-- Consul (Hashicorp Service Discovery)
-- Fabio (eBay's API Gateway)
+// TODO
 
 ## Starting the project
 

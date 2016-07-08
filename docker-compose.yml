@@ -20,7 +20,7 @@ services:
       file: ./core-services/services.yml
       service: rethinkdb_service
     volumes:
-      - ./users/data:/data
+      - ./users-service/data:/data
 
   consul:
     extends:
