@@ -4,7 +4,7 @@ I've been reading and studying about microservices in the last months, and final
 
 ## What I'm looking for
 
-A polyglot, scalable, portable, and easy to maintain distributed architecture.
+A suite of polyglot, scalable, portable, and easy to maintain microservices running in an appropriate environment.
 
 By "polyglot", I mean:
 
