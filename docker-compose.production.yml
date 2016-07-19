@@ -2,7 +2,7 @@ version: '2'
 services:
   users:
     extends:
-      file: ./users-service/docker-compose-production.yml
+      file: ./users-service/docker-compose.production.yml
       service: service
     restart: always
     ports:
