@@ -4,36 +4,48 @@ I've been reading and studying about microservices in the last months, and final
 
 ## What I'm looking for
 
-A suite of polyglot, scalable, portable, and easy to maintain microservices running in an appropriate environment.
+A suite of polyglot, scalable, portable, and easy to maintain microservices running in an appropriate and reproducible environment.
 
 By "polyglot", I mean:
 
- - Any service can be built using any kind of programming language and libraries it finds more suitable for getting his job done.
+ - [ ] Any service can be built using any kind of programming language and libraries it finds more suitable for getting his job done.
 
- - Any service can use any kind of database it finds more suitable for the job.
+ - [ ] Any service can use any kind of database it finds more suitable for the job.
 
 By "easy to maintain", I mean:
 
- - A service must be DRY, simple, small and follow the SRP from SOLID principles.
+ - [ ] A service must be DRY, simple, small and follow the SRP from SOLID principles.
 
- - Must be easy to write unit and e2e tests for each service.
+ - [ ] Must be easy to write unit and e2e tests for each service.
 
- - Must be easy to switch from a stack to another, so must be upgrading to major versions of frameworks and runtimes.
+ - [ ] Must be easy to switch from a stack to another, so must be upgrading to major versions of frameworks and runtimes.
 
- - It can't take longer than 3 days to refactor the whole service.
+ - [ ] It can't take longer than 3 days to refactor the whole service.
 
 By "portable", I mean:
 
- - Must be easy to run all the infrastructure needed to run one or more services in any kind of environment.
+ - [ ] Must be easy to run all the infrastructure needed to run one or more services in any kind of environment.
 
- - Must be easy to develop, build, debug and run a service independently 
- or with one or more dependent services.
+ - [ ] Must be easy to develop, build, debug and run a service independently or with one or more dependent services.
 
-## So what I am doing:
+ - [ ] Must be able to reproduce the state of one or more services for debugging purposes.
 
-Basically: I'm creating services and exposing them through a RESTful HTTP API.
+## So what I am doing
 
-But in a distributed architecture it has some challenges in order to achieve consistency and resiliency.
+This is an environment for running stateless services and their dependencies, but in order to achieve that, your service must follow some rules.
+
+**First**: your service must be stateless. This environment will not preserve any state of any of your services, so if you need it, you probably should think about 
+
+**Second**: your service must register to a Consul service registry when it has successfully started. It is needed in order to scale your service in multiple instances using `./commands/scale`. The `armand1m/core-services` is a project that has a `docker-compose.yml` file with already defined ports and environment variables for some basic services for this environment like Consul and Fabio.
+
+**Third**: your service must know how to handle its process health. If it needs to exit unexpectedly, it must know how to handle it, deregister from the service registry, then throw SIGTERM and some error code to finish the process ungracefully.
+
+# What is a service
+
+A service is a project in a repository that has a `docker-compose.yml` file.
+
+This project must `git submodule` the `armand1m/core-services` project in order to reproduce the environment in the local machine of the developer while developing.
+You can `git submodule` other services to help development too.
 
 Every service has its own Docker image, the Dockerfile's must be designed to cache as much as possible its own layers, so it can rebuild images faster and keep a fast cycle of continuous deployment.
 
@@ -48,23 +60,15 @@ If a service process throws an error to the STDOUT, the container must restart. 
 
 ## Starting the project
 
-First initialize git submodules. Each microservice is a git repository in my account and is used here by a git module.
-
 ```bash
-$ git submodule init
-$ git submodule update
-```
+# init the project
+$ ./commands/init
 
-Then build the services images:
+# build the services images
+$ ./commands/build
 
-```bash
-$ sudo ./commands/build
-```
-
-Then you can start the whole system using:
-
-```bash
-$ sudo ./commands/run
+# run the environment
+$ ./commands/run
 ```
 
 You can see the registered routes and services in `http://localhost:9998/`.
@@ -78,19 +82,19 @@ You can access the Consul UI in `http://localhost:8500/` and check the registere
 - See all containers output:
 
 ```bash
-$ sudo ./commands/logs
+$ ./commands/logs
 ```
 
 - See containers status:
 
 ```bash
-$ sudo ./commands/status
+$ ./commands/status
 ```
 
 - See the output of all the instances of a service:
 
 ```bash
-$ sudo docker-compose logs <service-name>
+$ ./commands/logs <service-name>
 ```
 
 ## Destroying
@@ -98,7 +102,7 @@ $ sudo docker-compose logs <service-name>
 You can destroy the containers using:
 
 ```bash
-$ sudo ./commands/destroy
+$ ./commands/destroy
 ```
 
 ## Scaling
@@ -106,5 +110,5 @@ $ sudo ./commands/destroy
 You can scale a service using:
 
 ```bash
-$ sudo docker-compose scale <service-name>=<number-of-instances>
+$ ./commands/scale <service-name>=<number-of-instances>
 ```
