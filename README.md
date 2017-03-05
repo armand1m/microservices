@@ -42,27 +42,24 @@ This is an environment for running stateless services and their dependencies, bu
 
 # What is a service
 
-A service is a project in a repository that has a `docker-compose.yml` file.
+Essentially, a service is just a RESTful API that can register and deregister itselfs from a Service Discovery instance.
 
-This project must `git submodule` the `armand1m/core-services` project in order to reproduce the environment in the local machine of the developer while developing.
-You can `git submodule` other services to help development too.
-
-Every service has its own Docker image, the Dockerfile's must be designed to cache as much as possible its own layers, so it can rebuild images faster and keep a fast cycle of continuous deployment.
-
-Each service runs only one process inside a container.
-
-If a service process throws an error to the STDOUT, the container must restart. After some tries, if the service can't stop throwing errors and operate normally, the environment must understand that the service is down and it's better wait for manual repair, and stop trying to restart the container.
- After some 
+To know more, read: https://github.com/armand1m/microservices-compose-utils/wiki/What-is-a-Service
 
 ## How it is structured
 
-// TODO
+This project actually is only a project that has a `docker-compose.yml` file, and has 3 services as `git submodules`.
+
+It also has a Docker Compose set of bash utilities as a `git submodule` as well.
 
 ## Starting the project
 
+Make sure you have Docker Daemon running.
+Make sure you have Git and Docker Compose installed.
+
 ```bash
-# init the project
-$ ./commands/init
+# initialize the project and its submodules
+$ ./install.sh
 
 # build the services images
 $ ./commands/build
@@ -71,44 +68,12 @@ $ ./commands/build
 $ ./commands/run
 ```
 
-You can see the registered routes and services in `http://localhost:9998/`.
+Some useful urls:
 
-The gateway spins up a server in `http://localhost:9999/` that load balance requests to the service instances registered on Consul.
+ - Gateway Entrypoint: `http://localhost:9999/`
+ - Gateway Route Table: `http://localhost:9998/`
+ - Service Discovery Monitoring Panel: `http://localhost:8500/`
+ 
+## Other commands
 
-You can access the Consul UI in `http://localhost:8500/` and check the registered services status.
-
-## Monitoring & Logging
-
-- See all containers output:
-
-```bash
-$ ./commands/logs
-```
-
-- See containers status:
-
-```bash
-$ ./commands/status
-```
-
-- See the output of all the instances of a service:
-
-```bash
-$ ./commands/logs <service-name>
-```
-
-## Destroying
-
-You can destroy the containers using:
-
-```bash
-$ ./commands/destroy
-```
-
-## Scaling
-
-You can scale a service using:
-
-```bash
-$ ./commands/scale <service-name>=<number-of-instances>
-```
+Refer to [armand1m/microservice-compose-utils](https://github.com/armand1m/microservices-compose-utils/) README.md to know more.

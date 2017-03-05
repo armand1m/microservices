@@ -4,8 +4,6 @@ services:
     build: ./users-service/service
     env_file: ./users-service/properties.env
     restart: always
-    ports:
-      - 80
     volumes:
       - ./users-service/service:/src/service
     depends_on:
@@ -13,6 +11,15 @@ services:
       - consul
     links:
       - users_database
+      - consul
+
+  hello:
+    build: ./hello-service/service
+    env_file: ./hello-service/properties.env
+    restart: always
+    depends_on:
+      - consul
+    links:
       - consul
 
   users_database:
