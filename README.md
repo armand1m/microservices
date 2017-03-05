@@ -8,9 +8,9 @@ A suite of polyglot, scalable, portable, and easy to maintain microservices runn
 
 By "polyglot", I mean:
 
- - [ ] Any service can be built using any kind of programming language and libraries it finds more suitable for getting his job done.
+ - [x] Any service can be built using any kind of programming language and libraries it finds more suitable for getting his job done.
 
- - [ ] Any service can use any kind of database it finds more suitable for the job.
+ - [x] Any service can use any kind of database it finds more suitable for the job.
 
 By "easy to maintain", I mean:
 
@@ -24,7 +24,7 @@ By "easy to maintain", I mean:
 
 By "portable", I mean:
 
- - [ ] Must be easy to run all the infrastructure needed to run one or more services in any kind of environment.
+ - [x] Must be easy to run all the infrastructure needed to run one or more services in any kind of environment.
 
  - [ ] Must be easy to develop, build, debug and run a service independently or with one or more dependent services.
 

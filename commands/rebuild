@@ -1,3 +1,0 @@
-#!/bin/bash
-
-sh -c "./commands/destroy | ./commands/build"
