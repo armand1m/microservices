@@ -4,6 +4,6 @@
 [submodule "core-services"]
 	path = core-services
 	url = https://github.com/armand1m/core-services.git
-[submodule "microservices-compose-utils"]
-	path = microservices-compose-utils
+[submodule "commands"]
+	path = commands
 	url = https://github.com/armand1m/microservices-compose-utils
