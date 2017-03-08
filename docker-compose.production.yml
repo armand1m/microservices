@@ -5,8 +5,6 @@ services:
       file: ./users-service/docker-compose.production.yml
       service: service
     restart: always
-    ports:
-      - 80
     depends_on:
       - users_database
       - consul
@@ -20,6 +18,15 @@ services:
       service: rethinkdb_service
     volumes:
       - ./users/data:/data
+
+  hello:
+    build: ./hello-service/service
+    env_file: ./hello-service/properties.env
+    restart: always
+    depends_on:
+      - consul
+    links:
+      - consul
 
   consul:
     extends:

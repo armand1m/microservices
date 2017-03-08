@@ -13,21 +13,23 @@ services:
       - users_database
       - consul
 
-  hello:
-    build: ./hello-service/service
-    env_file: ./hello-service/properties.env
-    restart: always
-    depends_on:
-      - consul
-    links:
-      - consul
-
   users_database:
     extends:
       file: ./core-services/services.yml
       service: rethinkdb_service
     volumes:
       - ./users-service/data:/data
+
+  hello:
+    build: ./hello-service/service
+    env_file: ./hello-service/properties.env
+    restart: always
+    volumes:
+      - ./hello-service/service:/src/service
+    depends_on:
+      - consul
+    links:
+      - consul
 
   consul:
     extends:
