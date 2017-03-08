@@ -7,3 +7,6 @@
 [submodule "commands"]
 	path = commands
 	url = https://github.com/armand1m/microservices-compose-utils
+[submodule "hello-service"]
+	path = hello-service
+	url = https://github.com/armand1m/hello-service.git
