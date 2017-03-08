@@ -2,6 +2,10 @@
 
 I've been reading and studying about microservices in the last months, and finally got a chance to start an actual implementation.
 
+_Simple gif showing how to setup project, run, and scale it:_
+
+![Microservices Demo Gif](assets/microservices-demo.gif)
+
 ## Whats this and its goal
 
 This is somehow an environment to run and scale web services.
