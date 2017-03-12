@@ -1,0 +1,19 @@
+graph RL
+   subgraph Environment
+      A[API Gateway]-->B[Service Discovery]
+      B-->A
+   end
+
+   subgraph Users Service
+      C[Instance 1]-->D[Database]
+      E[Instance 2]-->D
+      C-->B
+      E-->B
+   end
+
+   subgraph Hello Service
+      F[Instance]-->B
+   end
+
+   U[HTTP Client]-->A
+   A-->U
