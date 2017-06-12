@@ -1,6 +1,6 @@
 # A Microservices Architecture
 
-An implementation of a fully automated microservice environment built using Docker Compose.
+An implementation of a fully automated microservice environment built on top of Docker Compose, Dockerfiles and Git Submodules.
 
 _Simple gif showing how to setup project, run, and scale it:_
 
